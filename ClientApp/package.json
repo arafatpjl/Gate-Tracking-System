@@ -1,0 +1,19 @@
+{
+  "name": "gtrackweb-client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "React widgets embedded in the Gtrack ASP.NET Core MVC Razor pages.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}
