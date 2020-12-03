@@ -1,0 +1,30 @@
+@model SelectCompanyViewModel
+@{
+    ViewData["Title"] = "Select Company";
+}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title mb-3">Select Company &amp; Year</h4>
+                <form asp-action="SelectCompany" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label asp-for="CompId" class="form-label">Company</label>
+                        <select asp-for="CompId" class="form-select"
+                                asp-items="@(new SelectList(Model.Companies, "Value", "Text"))">
+                            <option value="">-- Select --</option>
+                        </select>
+                        <span asp-validation-for="CompId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Year" class="form-label">Year</label>
+                        <input asp-for="Year" class="form-control" />
+                        <span asp-validation-for="Year" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Continue</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
