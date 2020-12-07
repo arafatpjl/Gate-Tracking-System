@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Book Range";
+    var rows = (List<BookRangeRow>)ViewData["Rows"]!;
+    var departments = (List<LookupItem>)ViewData["Departments"]!;
+}
+<h3 class="mb-3">Book Range</h3>
+<div class="alert alert-secondary py-2">Challan book number ranges per department / section.</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">Add Book Range</div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-2">
+                        <label class="form-label">Department</label>
+                        <select name="dept" class="form-select" required>
+                            <option value="">-- Select --</option>
+                            @foreach (var d in departments)
+                            {
+                                <option value="@d.Value">@d.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Section</label>
+                        <input name="section" class="form-control" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Start No</label>
+                        <input name="startNo" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">End No</label>
+                        <input name="endNo" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark"><tr><th>Department</th><th>Section</th><th>Start No</th><th>End No</th><th style="width:90px"></th></tr></thead>
+            <tbody>
+            @foreach (var r in rows)
+            {
+                <tr>
+                    <td>@r.DeptName</td>
+                    <td>@r.SubDeptName</td>
+                    <td>@r.StartNo</td>
+                    <td>@r.EndNo</td>
+                    <td>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this range?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="dept" value="@r.DeptName" />
+                            <input type="hidden" name="section" value="@r.SubDeptName" />
+                            <input type="hidden" name="startNo" value="@r.StartNo" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (rows.Count == 0)
+            {
+                <tr><td colspan="5" class="text-center text-muted">No book ranges yet.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
