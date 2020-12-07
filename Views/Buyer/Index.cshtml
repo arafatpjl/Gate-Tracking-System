@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Buyer";
+}
+<h3 class="mb-3">Buyer Maintenance</h3>
+
+<div class="alert alert-info py-2">
+    This screen is a <strong>React widget</strong> embedded in the Razor page. It calls the
+    Buyer JSON API (<code>/Buyer/List</code>, <code>/Buyer/Create</code>, etc.).
+</div>
+
+<!-- React mounts here -->
+<div id="buyer-app" data-api-base="@Url.Content("~/Buyer")"></div>
+
+@section Scripts {
+    <script type="module" src="~/js/buyer.js" asp-append-version="true"></script>
+}
