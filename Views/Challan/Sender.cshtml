@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Challan Sender";
+}
+<h3 class="mb-3">Challan Sender</h3>
+
+<div class="alert alert-info py-2">
+    Master-detail <strong>React widget</strong>. Header fields + line items are posted together to
+    <code>/Challan/Save</code>, which persists the whole challan in one transaction.
+</div>
+
+<!-- React mounts here -->
+<div id="challan-sender-app"
+     data-lookups-url="@Url.Action("Lookups")"
+     data-save-url="@Url.Action("Save")"
+     data-list-url="@Url.Action("Index")"></div>
+
+@section Scripts {
+    <script type="module" src="~/js/challan-sender.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Challan Sender Gate";
+    var info = ViewData["Info"] as ChallanHeaderInfo;
+}
+<h3 class="mb-3">Challan Sender Gate (Check-Out)</h3>
+
+<form method="get" asp-action="SenderGate" class="row g-2 mb-3">
+    <div class="col-auto"><input name="gpNo" value="@info?.GpNo" placeholder="GP No" class="form-control" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Find</button></div>
+</form>
+
+@if (info != null)
+{
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3"><small class="text-muted">GP No</small><div class="fw-bold">@info.GpNo</div></div>
+                <div class="col-md-3"><small class="text-muted">Date</small><div>@info.GpDate</div></div>
+                <div class="col-md-3"><small class="text-muted">Group</small><div>@info.GroupName</div></div>
+                <div class="col-md-3">
+                    <small class="text-muted">Status</small><br />
+                    <span class="badge @(info.SenderGateOk ? "bg-success" : "bg-secondary")">Sender Gate @(info.SenderGateOk ? "OK" : "Pending")</span>
+                    <span class="badge @(info.ReceiverGateOk ? "bg-success" : "bg-secondary")">Receiver Gate @(info.ReceiverGateOk ? "OK" : "Pending")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">Check-Out at Sender Gate</div>
+    <div class="card-body">
+        <form method="post" asp-action="SenderGate" class="row g-2">
+            @Html.AntiForgeryToken()
+            <div class="col-md-3">
+                <label class="form-label">GP No</label>
+                <input name="gpNo" value="@info?.GpNo" class="form-control" required />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Gate Date</label>
+                <input type="date" name="date" class="form-control" required />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Gate Time</label>
+                <input type="time" name="time" step="1" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Remark</label>
+                <input name="remark" class="form-control" />
+            </div>
+            <div class="col-12"><button type="submit" class="btn btn-primary mt-2">Save (Gate Out)</button></div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Challan Receiver";
+    var info = ViewData["Info"] as ChallanHeaderInfo;
+    var lines = ViewData["Lines"] as List<ChallanLineView>;
+}
+<h3 class="mb-3">Challan Receiver (Confirm Receipt)</h3>
+
+<form method="get" asp-action="Receiver" class="row g-2 mb-3">
+    <div class="col-auto"><input name="gpNo" value="@info?.GpNo" placeholder="GP No" class="form-control" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Find</button></div>
+</form>
+
+@if (info == null)
+{
+    <div class="text-muted">Enter a GP No and press Find to load a challan.</div>
+}
+else
+{
+    <div class="card shadow-sm mb-3">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <span class="me-3"><small class="text-muted">GP No</small> <span class="fw-bold">@info.GpNo</span></span>
+                <span class="me-3"><small class="text-muted">Date</small> @info.GpDate</span>
+                <span class="me-3"><small class="text-muted">Group</small> @info.GroupName</span>
+            </div>
+            <div>
+                <span class="badge @(info.SenderGateOk ? "bg-success" : "bg-secondary")">Sender Gate @(info.SenderGateOk ? "OK" : "Pending")</span>
+                <span class="badge @(info.ReceiverGateOk ? "bg-success" : "bg-secondary")">Receiver Gate @(info.ReceiverGateOk ? "OK" : "Pending")</span>
+                @if (info.Received)
+                {
+                    <span class="badge bg-info">Already Received</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (!info.SenderGateOk || !info.ReceiverGateOk)
+    {
+        <div class="alert alert-warning">Both Sender Gate and Receiver Gate must be OK before receiving.</div>
+    }
+
+    <form method="post" asp-action="Receiver">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="gpId" value="@info.GpId" />
+        <div class="row g-2 mb-3">
+            <div class="col-md-3">
+                <label class="form-label">Received Date</label>
+                <input type="date" name="date" class="form-control" required />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Received Time</label>
+                <input type="time" name="time" step="1" class="form-control" required />
+            </div>
+        </div>
+
+        <table class="table table-sm table-bordered align-middle">
+            <thead class="table-dark">
+                <tr><th>#</th><th>Group</th><th>Item</th><th>PF No</th><th>Description</th><th>Unit</th><th>GP Qty</th><th style="width:110px">Rec Qty</th><th>Remarks</th></tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < (lines?.Count ?? 0); i++)
+            {
+                var l = lines![i];
+                <tr>
+                    <td>@l.Sl<input type="hidden" name="sl" value="@l.Sl" /></td>
+                    <td>@l.ItemGroup</td>
+                    <td>@l.ItemName</td>
+                    <td>@l.PfNo</td>
+                    <td>@l.Description</td>
+                    <td>@l.Unit</td>
+                    <td>@l.GpQty</td>
+                    <td><input type="number" step="any" name="recQty" value="@(l.RecQty > 0 ? l.RecQty : l.GpQty)" class="form-control form-control-sm" /></td>
+                    <td><input name="remarks" value="@l.Remarks" class="form-control form-control-sm" /></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success" @(info.Received || !info.SenderGateOk || !info.ReceiverGateOk ? "disabled" : "")>Confirm Receipt</button>
+    </form>
+}
