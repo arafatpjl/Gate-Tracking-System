@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Employee";
+    var departments = (List<LookupItem>)ViewData["Departments"]!;
+    var sections = (List<LookupItem>)ViewData["Sections"]!;
+    var dept = (string)ViewData["Dept"]!;
+    var section = (string)ViewData["Section"]!;
+    var code = (string)ViewData["Code"]!;
+    var name = (string)ViewData["Name"]!;
+    var rows = (List<EmployeeRow>)ViewData["Rows"]!;
+}
+<h3 class="mb-3">Employee Search</h3>
+<div class="alert alert-secondary py-2">
+    Read-only browse of <code>InfoEmp</code> (active employees). Choose a department then press
+    Search to load its sections.
+</div>
+
+<form method="get" asp-action="Index" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-3">
+        <label class="form-label">Department</label>
+        <select name="dept" class="form-select">
+            <option value="">-- All --</option>
+            @foreach (var d in departments)
+            {
+                if (d.Value == dept)
+                {
+                    <option value="@d.Value" selected>@d.Text</option>
+                }
+                else
+                {
+                    <option value="@d.Value">@d.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Section</label>
+        <select name="section" class="form-select">
+            <option value="">-- All --</option>
+            @foreach (var s in sections)
+            {
+                if (s.Value == section)
+                {
+                    <option value="@s.Value" selected>@s.Text</option>
+                }
+                else
+                {
+                    <option value="@s.Value">@s.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Emp Code</label>
+        <input name="code" value="@code" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Name</label>
+        <input name="name" value="@name" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<div class="text-muted mb-2">@rows.Count employee(s)</div>
+<table class="table table-sm table-striped table-bordered">
+    <thead class="table-dark"><tr><th>Emp Code</th><th>Name</th><th>Department</th><th>Section</th></tr></thead>
+    <tbody>
+    @foreach (var r in rows)
+    {
+        <tr><td>@r.EmpCode</td><td>@r.EmpName</td><td>@r.Department</td><td>@r.Section</td></tr>
+    }
+    @if (rows.Count == 0)
+    {
+        <tr><td colspan="4" class="text-center text-muted">No employees for the selected filter.</td></tr>
+    }
+    </tbody>
+</table>
