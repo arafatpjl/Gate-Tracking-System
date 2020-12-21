@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "Out Company";
+    var rows = (List<OutCompanyRow>)ViewData["Rows"]!;
+}
+<h3 class="mb-3">Out Company (External / Receiving Companies)</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">Add New Company</div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-2">
+                        <label class="form-label">Company Name</label>
+                        <input name="compName" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-control" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr><th>Name</th><th>Address</th><th style="width:220px">Action</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var r in rows)
+            {
+                <tr>
+                    <td>@r.CompName</td>
+                    <td>
+                        <form asp-action="Update" method="post" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="compId" value="@r.CompId" />
+                            <input name="address" value="@r.Address" class="form-control form-control-sm" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this company?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="compId" value="@r.CompId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (rows.Count == 0)
+            {
+                <tr><td colspan="3" class="text-center text-muted">No companies yet.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
