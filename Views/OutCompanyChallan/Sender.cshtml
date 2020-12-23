@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Out-Company Challan Sender";
+}
+<h3 class="mb-3">Out-Company Challan Sender</h3>
+
+<div class="alert alert-info py-2">
+    Reuses the same master-detail <strong>React widget</strong> as the in-company sender, posting to
+    <code>/OutCompanyChallan/Save</code> (persists to the <code>OutCmpy_*</code> tables in one transaction).
+</div>
+
+<!-- Same React component (~/js/challan-sender.js) mounted with out-company endpoints -->
+<div id="challan-sender-app"
+     data-lookups-url="@Url.Action("Lookups")"
+     data-save-url="@Url.Action("Save")"
+     data-list-url="@Url.Action("Index")"></div>
+
+@section Scripts {
+    <script type="module" src="~/js/challan-sender.js" asp-append-version="true"></script>
+}

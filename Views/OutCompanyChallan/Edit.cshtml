@@ -1,0 +1,99 @@
+@{
+    ViewData["Title"] = "Edit Out-Company Challan";
+    var info = ViewData["Info"] as ChallanHeaderInfo;
+    var lines = ViewData["Lines"] as List<ChallanLineView>;
+}
+<h3 class="mb-3">Edit / Delete Out-Company Challan</h3>
+
+<form method="get" asp-action="Edit" class="row g-2 mb-3">
+    <div class="col-auto"><input name="gpNo" value="@info?.GpNo" placeholder="GP No" class="form-control" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Find</button></div>
+</form>
+
+@if (info == null)
+{
+    <div class="text-muted">Enter a GP No and press Find to load a challan.</div>
+}
+else
+{
+    <div class="card shadow-sm mb-3">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <span class="me-3"><small class="text-muted">GP No</small> <span class="fw-bold">@info.GpNo</span></span>
+                <span class="me-3"><small class="text-muted">Date</small> @info.GpDate</span>
+                <span class="me-3"><small class="text-muted">Group</small> @info.GroupName</span>
+            </div>
+            <div>
+                <span class="badge @(info.SenderGateOk ? "bg-success" : "bg-secondary")">Sender Gate @(info.SenderGateOk ? "OK" : "Pending")</span>
+                @if (info.Received)
+                {
+                    <span class="badge bg-info">Received (locked)</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (info.Received)
+    {
+        <div class="alert alert-warning">This challan has been received and is locked from editing or deletion.</div>
+    }
+
+    @foreach (var dl in lines ?? new List<ChallanLineView>())
+    {
+        <form id="del@(dl.Sl)" method="post" asp-action="DeleteLine" class="d-none"
+              onsubmit="return confirm('Delete this line?');">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="gpId" value="@info.GpId" />
+            <input type="hidden" name="gpNo" value="@info.GpNo" />
+            <input type="hidden" name="sl" value="@dl.Sl" />
+        </form>
+    }
+
+    <form method="post" asp-action="Edit">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="gpId" value="@info.GpId" />
+        <input type="hidden" name="gpNo" value="@info.GpNo" />
+
+        <table class="table table-sm table-bordered align-middle">
+            <thead class="table-dark">
+                <tr><th>#</th><th>Group</th><th>Item</th><th>PF No</th><th>Description</th><th>Unit</th><th style="width:110px">Qty</th><th>Remarks</th><th></th></tr>
+            </thead>
+            <tbody>
+            @foreach (var l in lines ?? new List<ChallanLineView>())
+            {
+                <tr>
+                    <td>@l.Sl<input type="hidden" name="sl" value="@l.Sl" /></td>
+                    <td>@l.ItemGroup</td>
+                    <td>@l.ItemName</td>
+                    <td>@l.PfNo</td>
+                    <td><input name="description" value="@l.Description" class="form-control form-control-sm" @(info.Received ? "disabled" : "") /></td>
+                    <td><input name="unit" value="@l.Unit" class="form-control form-control-sm" @(info.Received ? "disabled" : "") /></td>
+                    <td><input type="number" step="any" name="qty" value="@l.GpQty" class="form-control form-control-sm" @(info.Received ? "disabled" : "") /></td>
+                    <td><input name="remarks" value="@l.Remarks" class="form-control form-control-sm" @(info.Received ? "disabled" : "") /></td>
+                    <td>
+                        @if (!info.Received)
+                        {
+                            <button type="submit" form="del@(l.Sl)" class="btn btn-sm btn-outline-danger">×</button>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        @if (!info.Received)
+        {
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        }
+    </form>
+
+    @if (!info.Received)
+    {
+        <form method="post" asp-action="Delete" class="mt-3"
+              onsubmit="return confirm('Delete the ENTIRE challan @info.GpNo?');">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="gpId" value="@info.GpId" />
+            <button type="submit" class="btn btn-outline-danger">Delete Entire Challan</button>
+        </form>
+    }
+}
