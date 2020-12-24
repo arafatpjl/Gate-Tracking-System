@@ -1,0 +1,99 @@
+@{
+    ViewData["Title"] = "PF No";
+    var rows = (List<PfNoRow>)ViewData["Rows"]!;
+    var buyers = (List<LookupItem>)ViewData["Buyers"]!;
+    var merchandisers = (List<LookupItem>)ViewData["Merchandisers"]!;
+}
+@functions {
+    // Renders a <select>'s option list, marking the current value selected.
+    Microsoft.AspNetCore.Html.IHtmlContent Options(List<LookupItem> items, string current)
+    {
+        var sb = new System.Text.StringBuilder();
+        foreach (var i in items)
+        {
+            var sel = i.Value == current ? " selected" : "";
+            sb.Append($"<option value=\"{System.Net.WebUtility.HtmlEncode(i.Value)}\"{sel}>{System.Net.WebUtility.HtmlEncode(i.Text)}</option>");
+        }
+        return new Microsoft.AspNetCore.Html.HtmlString(sb.ToString());
+    }
+}
+<h3 class="mb-3">PF No (File Numbers)</h3>
+<div class="alert alert-secondary py-2">PF numbers are auto-generated as <code>PF#n</code> on save.</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-header">Add PF No</div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" class="row g-2">
+            @Html.AntiForgeryToken()
+            <div class="col-md-2">
+                <label class="form-label">Date</label>
+                <input type="date" name="date" class="form-control" required />
+            </div>
+            <div class="col-md-1">
+                <label class="form-label">Qty</label>
+                <input name="qty" class="form-control" required />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Buyer</label>
+                <select name="buyerName" class="form-select" required>
+                    <option value="">-- Buyer --</option>
+                    @Options(buyers, "")
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Merchandiser</label>
+                <select name="merchandiser" class="form-select" required>
+                    <option value="">-- Merch --</option>
+                    @Options(merchandisers, "")
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Ref</label>
+                <input name="reference" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Description</label>
+                <input name="description" class="form-control" />
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary mt-2">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* One update <form> per row lives outside the table; row inputs bind to it via the HTML5 form= attribute (a <form> can't be a valid child of <tr>). *@
+@for (var i = 0; i < rows.Count; i++)
+{
+    var r = rows[i];
+    <form id="pfform@i" asp-action="Update" method="post" class="d-none">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="pfNo" value="@r.PfNo" />
+    </form>
+}
+
+<table class="table table-striped table-bordered align-middle">
+    <thead class="table-dark">
+        <tr><th>PF No</th><th>Date</th><th>Qty</th><th>Buyer</th><th>Merchandiser</th><th>Ref</th><th>Description</th><th style="width:90px"></th></tr>
+    </thead>
+    <tbody>
+    @for (var i = 0; i < rows.Count; i++)
+    {
+        var r = rows[i];
+        <tr>
+            <td class="fw-bold">@r.PfNo</td>
+            <td>@r.CrDate</td>
+            <td style="width:70px"><input form="pfform@i" name="qty" value="@r.Qty" class="form-control form-control-sm" /></td>
+            <td><select form="pfform@i" name="buyerName" class="form-select form-select-sm">@Options(buyers, r.BuyerName)</select></td>
+            <td><select form="pfform@i" name="merchandiser" class="form-select form-select-sm">@Options(merchandisers, r.Merchandiser)</select></td>
+            <td><input form="pfform@i" name="reference" value="@r.Ref" class="form-control form-control-sm" /></td>
+            <td><input form="pfform@i" name="description" value="@r.Description" class="form-control form-control-sm" /></td>
+            <td><button type="submit" form="pfform@i" class="btn btn-sm btn-outline-primary">Update</button></td>
+        </tr>
+    }
+    @if (rows.Count == 0)
+    {
+        <tr><td colspan="8" class="text-center text-muted">No PF numbers yet.</td></tr>
+    }
+    </tbody>
+</table>
