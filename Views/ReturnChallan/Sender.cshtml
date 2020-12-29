@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Return Challan Sender";
+    var info = ViewData["Info"] as ChallanHeaderInfo;
+    var lines = ViewData["Lines"] as List<ChallanLineView>;
+    var notReturnable = ViewData["NotReturnable"] as bool? ?? false;
+}
+<h3 class="mb-3">Return Challan Sender</h3>
+
+<form method="get" asp-action="Sender" class="row g-2 mb-3">
+    <div class="col-auto"><input name="gpNo" value="@info?.GpNo" placeholder="Original GP No" class="form-control" /></div>
+    <div class="col-auto"><button class="btn btn-outline-secondary" type="submit">Find</button></div>
+</form>
+
+@if (notReturnable)
+{
+    <div class="alert alert-warning">Challan not found or is not returnable (Returnable must be YES).</div>
+}
+
+@if (info != null)
+{
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <span class="me-3"><small class="text-muted">Original GP No</small> <span class="fw-bold">@info.GpNo</span></span>
+            <span class="me-3"><small class="text-muted">Date</small> @info.GpDate</span>
+            <span class="me-3"><small class="text-muted">Group</small> @info.GroupName</span>
+        </div>
+    </div>
+
+    <form method="post" asp-action="Sender">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="gpId" value="@info.GpId" />
+        <div class="row g-2 mb-3">
+            <div class="col-md-3">
+                <label class="form-label">Return GP Date</label>
+                <input type="date" name="gpDate" class="form-control" required />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Return Date</label>
+                <input type="date" name="returnDate" class="form-control" />
+            </div>
+        </div>
+
+        <table class="table table-sm table-bordered align-middle">
+            <thead class="table-dark">
+                <tr><th>#</th><th>Group</th><th>Item</th><th>PF No</th><th>Description</th><th>Unit</th><th>Orig Qty</th><th style="width:120px">Return Qty</th><th>Remarks</th></tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < (lines?.Count ?? 0); i++)
+            {
+                var l = lines![i];
+                <tr>
+                    <td>@l.Sl<input type="hidden" name="sl" value="@l.Sl" /></td>
+                    <td>@l.ItemGroup</td>
+                    <td>@l.ItemName</td>
+                    <td>@l.PfNo</td>
+                    <td>@l.Description</td>
+                    <td>@l.Unit</td>
+                    <td>@l.GpQty</td>
+                    <td><input type="number" step="any" name="recQty" value="0" min="0" class="form-control form-control-sm" /></td>
+                    <td><input name="remarks" class="form-control form-control-sm" /></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div class="alert alert-secondary py-2">Enter a return quantity (&gt; 0) only for the lines being returned.</div>
+        <button type="submit" class="btn btn-success">Save Return Challan</button>
+    </form>
+}
