@@ -1,0 +1,47 @@
+@using System.Data
+@{
+    var table = ViewData["Table"] as DataTable;
+    // Build a CSV export link = current URL + export=csv.
+    var q = new Dictionary<string, string?>();
+    foreach (var kv in Context.Request.Query) q[kv.Key] = kv.Value;
+    q["export"] = "csv";
+    var csvUrl = Url.Action(null, null, null) + Microsoft.AspNetCore.Http.QueryString.Create(q!);
+}
+@if (table != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-muted">@table.Rows.Count row(s)</span>
+        @if (table.Rows.Count > 0)
+        {
+            <a class="btn btn-sm btn-outline-success" href="@csvUrl">Export CSV</a>
+        }
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    @foreach (DataColumn col in table.Columns)
+                    {
+                        <th>@col.ColumnName</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow row in table.Rows)
+                {
+                    <tr>
+                        @foreach (var cell in row.ItemArray)
+                        {
+                            <td>@cell</td>
+                        }
+                    </tr>
+                }
+                @if (table.Rows.Count == 0)
+                {
+                    <tr><td colspan="@Math.Max(1, table.Columns.Count)" class="text-center text-muted">No data for the selected filter.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
