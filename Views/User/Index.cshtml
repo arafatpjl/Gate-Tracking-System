@@ -1,0 +1,76 @@
+@{
+    ViewData["Title"] = "User";
+    var rows = (List<UserRow>)ViewData["Rows"]!;
+}
+<h3 class="mb-3">User Administration</h3>
+<div class="alert alert-secondary py-2">
+    Manages login users in <code>Sys_User_Name_UP</code>. The legacy per-user menu-permission
+    system is not replicated — all logged-in users see the full menu.
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">Add User</div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-2">
+                        <label class="form-label">User Name</label>
+                        <input name="userName" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Password</label>
+                        <input name="password" type="password" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark"><tr><th>User Name</th><th>Status</th><th>Reset Password</th><th style="width:130px">Action</th></tr></thead>
+            <tbody>
+            @foreach (var r in rows)
+            {
+                <tr>
+                    <td class="fw-bold">@r.UserName</td>
+                    <td>
+                        @if (r.Active)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="ResetPassword" method="post" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@r.UserId" />
+                            <input name="password" type="password" placeholder="New password" class="form-control form-control-sm" required />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Set</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="SetActive" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@r.UserId" />
+                            <input type="hidden" name="active" value="@((!r.Active).ToString().ToLower())" />
+                            <button type="submit" class="btn btn-sm @(r.Active ? "btn-outline-danger" : "btn-outline-success")">
+                                @(r.Active ? "Deactivate" : "Activate")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (rows.Count == 0)
+            {
+                <tr><td colspan="4" class="text-center text-muted">No users.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
