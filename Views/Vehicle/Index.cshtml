@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Vehicle";
+    var rows = (List<VehicleRow>)ViewData["Rows"]!;
+}
+<h3 class="mb-3">Vehicle</h3>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">Add Vehicle</div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-2">
+                        <label class="form-label">Vehicle No</label>
+                        <input name="vehicleNo" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark"><tr><th>Vehicle No</th><th style="width:260px">Action</th></tr></thead>
+            <tbody>
+            @foreach (var r in rows)
+            {
+                <tr>
+                    <td>
+                        <form asp-action="Update" method="post" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="oldVehicleNo" value="@r.VehicleNo" />
+                            <input name="vehicleNo" value="@r.VehicleNo" class="form-control form-control-sm" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this vehicle?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="vehicleNo" value="@r.VehicleNo" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (rows.Count == 0)
+            {
+                <tr><td colspan="2" class="text-center text-muted">No vehicles yet.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
