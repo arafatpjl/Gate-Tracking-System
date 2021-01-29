@@ -1,0 +1,42 @@
+@using GtrackWeb.Services
+@{
+    var title = (string)ViewData["Title"]!;
+    var modes = (IReadOnlyList<ReportService.ReportMode>)ViewData["Modes"]!;
+    var mode = (string)ViewData["Mode"]!;
+    var from = (string)ViewData["From"]!;
+    var to = (string)ViewData["To"]!;
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<h3 class="mb-3">@title</h3>
+
+<form method="get" asp-action="@action" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-3">
+        <label class="form-label">Type</label>
+        <select name="mode" class="form-select">
+            @foreach (var m in modes)
+            {
+                if (m.Key == mode)
+                {
+                    <option value="@m.Key" selected>@m.Label</option>
+                }
+                else
+                {
+                    <option value="@m.Key">@m.Label</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">From Date</label>
+        <input type="date" name="from" value="@from" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">To Date</label>
+        <input type="date" name="to" value="@to" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Run Report</button>
+    </div>
+</form>
+
+<partial name="_ReportTable" />

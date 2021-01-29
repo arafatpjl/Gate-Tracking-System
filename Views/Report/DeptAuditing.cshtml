@@ -1,0 +1,60 @@
+@using GtrackWeb.Services
+@{
+    ViewData["Title"] = "Department Wise Challan Auditing";
+    var modes = (IReadOnlyList<ReportService.ReportMode>)ViewData["Modes"]!;
+    var departments = (List<LookupItem>)ViewData["Departments"]!;
+    var mode = (string)ViewData["Mode"]!;
+    var dept = (string)ViewData["Dept"]!;
+    var from = (string)ViewData["From"]!;
+    var to = (string)ViewData["To"]!;
+}
+<h3 class="mb-3">Department Wise Challan Auditing</h3>
+
+<form method="get" asp-action="DeptAuditing" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-3">
+        <label class="form-label">Type</label>
+        <select name="mode" class="form-select">
+            @foreach (var m in modes)
+            {
+                if (m.Key == mode)
+                {
+                    <option value="@m.Key" selected>@m.Label</option>
+                }
+                else
+                {
+                    <option value="@m.Key">@m.Label</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Department / Section</label>
+        <select name="dept" class="form-select">
+            <option value="">-- All --</option>
+            @foreach (var d in departments)
+            {
+                if (d.Value == dept)
+                {
+                    <option value="@d.Value" selected>@d.Text</option>
+                }
+                else
+                {
+                    <option value="@d.Value">@d.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">From Date</label>
+        <input type="date" name="from" value="@from" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">To Date</label>
+        <input type="date" name="to" value="@to" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Run Report</button>
+    </div>
+</form>
+
+<partial name="_ReportTable" />

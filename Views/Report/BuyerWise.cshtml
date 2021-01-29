@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Buyer Wise Challan";
+    var outCompanies = (List<LookupItem>)ViewData["OutCompanies"]!;
+    var mainBuyers = (List<LookupItem>)ViewData["MainBuyers"]!;
+    var rcvr = (string)ViewData["Rcvr"]!;
+    var buyer = (string)ViewData["Buyer"]!;
+    var from = (string)ViewData["From"]!;
+    var to = (string)ViewData["To"]!;
+}
+<h3 class="mb-3">Buyer Wise Challan</h3>
+
+<form method="get" asp-action="BuyerWise" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-3">
+        <label class="form-label">Receiving Company</label>
+        <select name="rcvr" class="form-select">
+            <option value="">-- All --</option>
+            @foreach (var c in outCompanies)
+            {
+                if (c.Text == rcvr)
+                {
+                    <option value="@c.Text" selected>@c.Text</option>
+                }
+                else
+                {
+                    <option value="@c.Text">@c.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Main Buyer</label>
+        <select name="buyer" class="form-select">
+            <option value="">-- All --</option>
+            @foreach (var b in mainBuyers)
+            {
+                if (b.Text == buyer)
+                {
+                    <option value="@b.Text" selected>@b.Text</option>
+                }
+                else
+                {
+                    <option value="@b.Text">@b.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">From Date</label>
+        <input type="date" name="from" value="@from" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">To Date</label>
+        <input type="date" name="to" value="@to" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Run Report</button>
+    </div>
+</form>
+
+<partial name="_ReportTable" />
